@@ -1,0 +1,36 @@
+# Example of an Nginx configuration for Simple NuGet Server
+
+server {
+	server_name example.com;
+	root /var/www/simple-nuget-server/public/;
+
+	rewrite ^/$ /index.php;
+	rewrite ^/\$metadata$ /metadata.xml;
+	rewrite ^/Search\(\)/\$count$ /count.php;
+	rewrite ^/Search\(\)$ /search.php;
+	rewrite ^/Packages\(\)$ /search.php;
+	rewrite ^/FindPackagesById\(\)$ /findByID.php;
+	rewrite ^/download/([^/]+)/([^/]+)$ /download.php?id=$1&version=$2;
+	# NuGet seems to like pushing to this URL sometimes :/
+	rewrite ^/api/v2/package/$ /index.php;
+
+	location ~ \.php$ {
+		include fastcgi_params;
+		fastcgi_pass hhvm;
+	}
+
+	location = /index.php {
+		dav_methods PUT;
+		include fastcgi_params;
+		fastcgi_pass hhvm;
+
+		# PHP doesn't parse request body for PUT requests, so fake a POST.			fastcgi_param REQUEST_METHOD POST;
+		fastcgi_param HTTP_X_METHOD_OVERRIDE $request_method;
+	}
+
+	# Used with X-Accel-Redirect
+	location /packagefiles {
+		internal;
+		root /var/www/simple-nuget-server/;
+	}
+}
