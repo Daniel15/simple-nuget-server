@@ -6,14 +6,14 @@ $is_put = $_SERVER['REQUEST_METHOD'] === 'PUT' ||
 		$_SERVER['HTTP_X_METHOD_OVERRIDE'] === 'PUT'
 	);
 if ($is_put) {
-	require('push.php');
+	require(__DIR__ . '/push.php');
 	die();
 }
 
 header('Content-Type: text/xml; charset=utf-8');
 $base_url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
+echo "<" . "?xml version='1.0' encoding='utf-8' standalone='yes'?>";
 ?>
-<?xml version='1.0' encoding='utf-8' standalone='yes'?>
 <service xml:base="<?= $base_url ?>/"
     xmlns:atom="http://www.w3.org/2005/Atom"
     xmlns:app="http://www.w3.org/2007/app"

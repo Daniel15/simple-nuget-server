@@ -1,6 +1,6 @@
 <?php
-require('../inc/core.php');
-require('../inc/feedwriter.php');
+require(__DIR__ . '/../inc/core.php');
+require(__DIR__ . '/../inc/feedwriter.php');
 
 // TODO: Pagination
 $results = DB::searchPackages([

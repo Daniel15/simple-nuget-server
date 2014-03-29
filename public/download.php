@@ -1,5 +1,5 @@
 <?php
-require('../inc/core.php');
+require(__DIR__ . '/../inc/core.php');
 $id = $_GET['id'];
 $version = $_GET['version'];
 

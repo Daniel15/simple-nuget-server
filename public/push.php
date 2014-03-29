@@ -1,5 +1,5 @@
 <?php
-require('../inc/core.php');
+require(__DIR__ . '/../inc/core.php');
 
 if (empty($_SERVER['HTTP_X_NUGET_APIKEY']) || $_SERVER['HTTP_X_NUGET_APIKEY'] != Config::$apiKey) {
 	api_error('403', 'Invalid API key');
