@@ -9,6 +9,8 @@ server {
 	rewrite ^/Search\(\)/\$count$ /count.php;
 	rewrite ^/Search\(\)$ /search.php;
 	rewrite ^/Packages\(\)$ /search.php;
+	rewrite ^/Packages\(Id='([^']+)',Version='([^']+)'\)$ /findByID.php?id=$1&version=$2;
+	rewrite ^/GetUpdates\(\)$ /updates.php;
 	rewrite ^/FindPackagesById\(\)$ /findByID.php;
 	rewrite ^/download/([^/]+)/([^/]+)$ /download.php?id=$1&version=$2;
 	# NuGet seems to like pushing to this URL sometimes :/

@@ -89,14 +89,53 @@ class DB {
 		return static::doSearch($where, $order, $query_params);
 	}
 
-	public static function findByID($id) {
+	public static function packageUpdates($params) {
+		$VERSION_SEPARATOR = '~~';
+		$packages = [];
+		$package_versions = [];
+		foreach ($params['packages'] as $package => $version) {
+			$packages[] = $package;
+			$package_versions[] = $package . $VERSION_SEPARATOR . $version;
+		}
+
+		$query_params = [];
+		// Where:
+		// 1. Package is the latest version
+		// 2. Package is in list of packages we want
+		// 3. Package version is NOT the version we already have
+		$where =
+			'versions.Version = packages.LatestVersion AND ' .
+			static::buildInClause(
+				'packages.PackageId',
+				$packages,
+				$query_params
+			) . ' AND ' .
+			static::buildInClause(
+				'packages.PackageId || "' . $VERSION_SEPARATOR . '" || versions.Version',
+				$package_versions,
+				$query_params,
+				true
+			);
+
 		return static::doSearch(
-			'packages.PackageId = :id',
-			'versions.Version DESC',
-			[
-				'id' => $id
-			]
+			$where,
+			'packages.PackageId ASC',
+			$query_params
 		);
+	}
+
+	/**
+	 * Finds a package by ID and version. If no version is passed, returns
+	 * all versions.
+	 */
+	public static function findByID($id, $version = null) {
+		$where = 'packages.PackageId = :id';
+		$params = ['id' => $id];
+		if (!empty($version)) {
+			$where .= ' AND versions.Version = :version';
+			$params['version'] = $version;
+		}
+		return static::doSearch($where, 'versions.Version DESC', $params);
 	}
 
 	private static function parseOrderBy($order_by) {
@@ -229,6 +268,38 @@ class DB {
 			)
 		');
 		$stmt->execute($params);
+	}
+
+	/**
+	 * Builds a parameterised IN(...) WHERE clause.
+	 *
+	 * @param $field Name of the field
+	 * @param $values Array of values to use in the IN clause
+	 * @param $params Hash to add query parameters to
+	 * @param $invert If true, do a "NOT IN" clause rather than an "IN" clause
+	 * @return There WHERE clause segment
+	 */
+	private static function buildInClause($field, $values, &$params, $invert = false) {
+		if (count($values) === 0) {
+			return '1=1';
+		}
+
+		$i = 0;
+		$placeholders = [];
+		// Generate a unique prefix to use for all the query parameters
+		$prefix = ':value' . mt_rand(0, 9999999);
+		foreach ($values as $value) {
+			$param_name = $prefix . $i;
+			$params[$param_name] = $value;
+			$placeholders[] = $param_name;
+			$i++;
+		}
+		$clause = $field;
+		if (!empty($invert)) {
+			$clause = $clause . ' NOT';
+		}
+		$clause = $clause . ' IN (' . implode(', ', $placeholders) . ')';
+		return $clause;
 	}
 }
 
