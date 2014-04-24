@@ -26,7 +26,8 @@ server {
 		include fastcgi_params;
 		fastcgi_pass hhvm;
 
-		# PHP doesn't parse request body for PUT requests, so fake a POST.			fastcgi_param REQUEST_METHOD POST;
+		# PHP doesn't parse request body for PUT requests, so fake a POST.
+		fastcgi_param REQUEST_METHOD POST;
 		fastcgi_param HTTP_X_METHOD_OVERRIDE $request_method;
 	}
 
