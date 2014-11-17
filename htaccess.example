@@ -1,0 +1,38 @@
+<Limit PUT>
+Require all granted
+</Limit>
+
+XSendFile on
+# If incorporating into a VirtualHost or Directory configuration,
+# uncomment the line below and edit the path.
+#XSendFilePath /home/dschepler/public_html/choco-x64/packagefiles
+#
+# Otherwise, you'll need to add a configuration like the below
+# to e.g. /etc/apache2/mods-enabled/xsendfile.conf
+#<Directory "/home/dschepler/public_html/choco-x64">
+#  XSendFilePath /home/dschepler/public_html/choco-x64/packagefiles
+#</Directory>
+
+RewriteEngine on
+# edit this path for the base path of your repository
+RewriteBase /~dschepler/choco-x64/
+
+RewriteCond %{REQUEST_METHOD} =PUT
+RewriteRule ^$ public/push.php [L]
+
+RewriteCond %{REQUEST_METHOD} =PUT
+RewriteRule ^(.*)$ public/push.php?$1 [L]
+
+RewriteRule ^$ public/index.php [L]
+RewriteRule ^\$metadata$ public/metadata.xml [L]
+RewriteRule ^Search\(\)/\$count$ public/count.php [L]
+RewriteRule ^Search\(\)$ public/search.php [L]
+RewriteRule ^Packages\(\)$ public/search.php [L]
+RewriteRule ^Packages\(Id='([^']+)',Version='([^']+)'\)$ public/findByID.php?id=$1&version=$2 [L]
+RewriteRule ^GetUpdates\(\)$ public/updates.php [L]
+RewriteRule ^FindPackagesById\(\)$ public/findByID.php [L]
+RewriteRule ^download/([^/]+)/([^/]+)$ public/download.php?id=$1&version=$2 [L]
+RewriteRule ^api/v2/package/$ public/index.php [L]
+RewriteRule !^packagefiles/ - [C]
+RewriteRule !^public/ - [C]
+RewriteRule (.*) public/$1 [L]

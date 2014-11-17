@@ -1,5 +1,10 @@
 <?php
 require(__DIR__ . '/../inc/core.php');
+require(__DIR__ . '/../inc/parseput.php');
+
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+	parsePut();
+}
 
 if (empty($_SERVER['HTTP_X_NUGET_APIKEY']) || $_SERVER['HTTP_X_NUGET_APIKEY'] != Config::$apiKey) {
 	api_error('403', 'Invalid API key');
@@ -58,7 +63,10 @@ $path = $dir . $version . '.nupkg';
 if (!file_exists($dir)) {
 	mkdir($dir, /* mode */ 0755, /* recursive */ true);
 }
-if (!move_uploaded_file($upload_filename, $path)) {
+//if (!move_uploaded_file($upload_filename, $path)) {
+//	api_error('500', 'Could not save file');
+//}
+if (!rename($upload_filename, $path)) {
 	api_error('500', 'Could not save file');
 }
 
