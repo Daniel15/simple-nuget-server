@@ -1,5 +1,8 @@
 <?php
 require(__DIR__ . '/../inc/core.php');
+
+$_GET = array_change_key_case($_GET, CASE_LOWER);
+
 $id = $_GET['id'];
 $version = $_GET['version'];
 
