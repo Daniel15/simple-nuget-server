@@ -2,8 +2,6 @@
 require(__DIR__ . '/../inc/core.php');
 require(__DIR__ . '/../inc/feedwriter.php');
 
-$_GET = array_change_key_case($_GET, CASE_LOWER);
-
 // TODO: Pagination
 $results = DB::searchPackages([
 	'includePrerelease' => !empty($_GET['includeprerelease']),
