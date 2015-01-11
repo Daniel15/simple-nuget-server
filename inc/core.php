@@ -16,3 +16,6 @@ function api_error($code, $message) {
 set_exception_handler(function($exception) {
 	api_error('500', $exception->getMessage());
 });
+
+// Make $_GET keys lower-case for improved NuGet client compatibility.
+$_GET = array_change_key_case($_GET, CASE_LOWER);
