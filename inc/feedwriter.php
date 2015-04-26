@@ -96,7 +96,7 @@ class FeedWriter {
             'Description' => $row['Description'],
             'DownloadCount' => ['value' => $row['DownloadCount'], 'type' => 'Edm.Int32'],
             'GalleryDetailsUrl' => $this->baseURL . 'details/' . $row['PackageId'] . '/' . $row['Version'],
-            'IconUrl' => $row['IconUrl'],
+            'IconUrl' => htmlspecialchars($row['IconUrl']),
             'IsLatestVersion' => static::renderMetaBoolean($row['LatestVersion'] === $row['Version']),
             'IsAbsoluteLatestVersion' => static::renderMetaBoolean($row['LatestVersion'] === $row['Version']),
             'IsPrerelease' => static::renderMetaBoolean($row['IsPrerelease']),
