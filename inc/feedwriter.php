@@ -93,7 +93,7 @@ class FeedWriter {
             'Copyright' => $row['Copyright'],
             'Created' => static::renderMetaDate($row['Created']),
             'Dependencies' => $this->renderDependencies($row['Dependencies']),
-            'Description' => $row['Description'],
+            'Description' => htmlspecialchars($row['Description']),
             'DownloadCount' => ['value' => $row['DownloadCount'], 'type' => 'Edm.Int32'],
             'GalleryDetailsUrl' => $this->baseURL . 'details/' . $row['PackageId'] . '/' . $row['Version'],
             'IconUrl' => htmlspecialchars($row['IconUrl']),
