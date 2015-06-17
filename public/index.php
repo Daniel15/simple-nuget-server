@@ -5,10 +5,25 @@ $is_put = $_SERVER['REQUEST_METHOD'] === 'PUT' ||
 		!empty($_SERVER['HTTP_X_METHOD_OVERRIDE']) &&
 		$_SERVER['HTTP_X_METHOD_OVERRIDE'] === 'PUT'
 	);
+
+// DELETE request need to be redirected to delete.php
+$is_delete = $_SERVER['REQUEST_METHOD'] === 'DELETE' ||
+	(
+		!empty($_SERVER['HTTP_X_METHOD_OVERRIDE']) &&
+		$_SERVER['HTTP_X_METHOD_OVERRIDE'] === 'DELETE'
+	);
+
 if ($is_put) {
 	require(__DIR__ . '/push.php');
 	die();
 }
+
+if ($is_delete) {
+	require(__DIR__.'/delete.php');
+	die();
+}
+
+
 
 header('Content-Type: text/xml; charset=utf-8');
 $base_url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
