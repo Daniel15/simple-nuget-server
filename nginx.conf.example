@@ -4,6 +4,8 @@ server {
 	server_name example.com;
 	root /var/www/simple-nuget-server/public/;
 
+	error_log /var/log/nginx/example.com_error.com.log error;
+	access_log /var/log/nginx/example.com_access.log error;
 	rewrite ^/$ /index.php;
 	rewrite ^/\$metadata$ /metadata.xml;
 	rewrite ^/Search\(\)/\$count$ /count.php;
@@ -19,12 +21,17 @@ server {
 	location ~ \.php$ {
 		include fastcgi_params;
 		fastcgi_pass hhvm;
+		#sample entry - replace hhvm based on your nginx settings
+		#fastcgi_pass unix:/var/run/php5-fpm.sock;
 	}
 
 	location = /index.php {
-		dav_methods PUT;
+		dav_methods PUT DELETE;
+		dav_access user:rw group:rw all:r;
 		include fastcgi_params;
 		fastcgi_pass hhvm;
+		#sample entry - replace hhvm based on your nginx settings
+		#fastcgi_pass unix:/var/run/php5-fpm.sock;		
 
 		# PHP doesn't parse request body for PUT requests, so fake a POST.
 		fastcgi_param REQUEST_METHOD POST;
@@ -36,4 +43,7 @@ server {
 		internal;
 		root /var/www/simple-nuget-server/;
 	}
+	
+	# sample entry for a stand alone server
+	# listen 192.168.1.10:80 default_server ipv6only=off;
 }
