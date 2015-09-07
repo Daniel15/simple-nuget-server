@@ -8,6 +8,8 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
 });
 
 function api_error($code, $message) {
+	//http_response_code($code);
+	header("HTTP/1.1 $code $message");
 	header('Status: ' . $code . ' ' . $message);
 	header('Content-Type: text/plain');
 	echo htmlspecialchars($message);

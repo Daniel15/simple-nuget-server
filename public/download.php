@@ -16,7 +16,12 @@ if (
 DB::incrementDownloadCount($id, $version);
 
 // This is safe - These values have been validated via validateIdAndVersion above
-$path = '/packagefiles/' . $id . '/' . $version . '.nupkg';
+$path = 'packagefiles/' . $id . '/' . $version . '.nupkg';
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="' . $id . '.' . $version . '.nupkg"');
-header('X-Accel-Redirect: ' . $path);
+if (preg_match('/^Apache/', $_SERVER['SERVER_SOFTWARE'])) {
+	header('X-Sendfile: ' . dirname(getcwd()) . '/' . $path);
+}
+else {
+	header('X-Accel-Redirect: /' . $path);
+}
