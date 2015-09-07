@@ -3,7 +3,11 @@ class DB {
 	private static $conn;
 
 	public static function init() {
-		static::$conn = new PDO(Config::$dbName);
+		static::$conn = new PDO(
+			Config::$dbName,
+			Config::$dbUsername,
+			Config::$dbPassword
+		);
 		static::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		static::createTables();
 	}
