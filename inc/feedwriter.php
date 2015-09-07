@@ -163,10 +163,34 @@ class FeedWriter {
 		}
 
 		$output = [];
-		foreach ($data as $id => $version) {
-			$output[] = $id . ':' . $version . ':';
+		// Hax: Previous versions used an associative array of id => version for the
+		// dependencies, but newer versions use a 'real' array. Determine if we're
+		// using the old format or the new format.
+		if (is_array($data)) {
+			foreach ($data as $dependency) {
+				$formatted_dependency =
+					$dependency->id . ':' .
+					$dependency->version . ':';
+				if (!empty($dependency->framework)) {
+					$formatted_dependency .= $this->formatTargetFramework($dependency->framework);
+				}
+				$output[] = $formatted_dependency;
+			}
+		} else {
+			// Legacy format
+			foreach ($data as $id => $version) {
+				$output[] = $id . ':' . $version . ':';
+			}
 		}
 		return implode('|', $output);
+	}
+
+	/**
+	 * Formats a raw target framework from a NuSpec into the format used in the
+	 * packages feed (eg. "DNX4.5.1" -> "dnx451", "DNXCore5.0" -> "dnxcore50").
+	 */
+	private function formatTargetFramework($framework) {
+		return strtolower(preg_replace('/[^A-Z0-9]/i', '', $framework));
 	}
 
 	private function addWithAttribs($entry, $name, $value, $attributes) {

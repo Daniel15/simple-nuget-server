@@ -45,9 +45,30 @@ $hash = base64_encode(hash_file('sha512', $upload_filename, true));
 $filesize = filesize($_FILES['package']['tmp_name']);
 $dependencies = [];
 
-if ($nuspec->metadata->dependencies && $nuspec->metadata->dependencies->dependency) {
-	foreach ($nuspec->metadata->dependencies->dependency as $dependency) {
-		$dependencies[(string)$dependency['id']] = (string)$dependency['version'];
+
+if ($nuspec->metadata->dependencies) {
+	if ($nuspec->metadata->dependencies->dependency) {
+		// Dependencies that are not specific to any framework
+		foreach ($nuspec->metadata->dependencies->dependency as $dependency) {
+			$dependencies[] = [
+				'framework' => null,
+				'id' => (string)$dependency['id'],
+				'version' => (string)$dependency['version']
+			];
+		}
+	}
+
+	if ($nuspec->metadata->dependencies->group) {
+		// Dependencies that are specific to a particular framework
+		foreach ($nuspec->metadata->dependencies->group as $group) {
+			foreach ($group->dependency as $dependency) {
+				$dependencies[] = [
+					'framework' => (string)$group['targetFramework'],
+					'id' => (string)$dependency['id'],
+					'version' => (string)$dependency['version']
+				];
+			}
+		}
 	}
 }
 
@@ -77,7 +98,7 @@ DB::insertVersion([
 	':PackageHashAlgorithm' => 'SHA512',
 	':PackageSize' => $filesize,
 	':IconUrl' => $nuspec->metadata->iconUrl,
-	':IsPrerelease' => strpos($version, '-') === false,
+	':IsPrerelease' => strpos($version, '-') !== false,
 	':LicenseUrl' => $nuspec->metadata->licenseUrl,
 	':Owners' => $nuspec->metadata->owners,
 	':PackageId' => $id,
