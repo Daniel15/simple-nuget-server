@@ -250,6 +250,69 @@ class DB {
 		$stmt->execute($params);
 	}
 
+
+	// Delete a package
+    public static function deletePackage($id) {
+        	$stmt = static::$conn->prepare('
+                        DELETE FROM packages
+                        WHERE PackageId = :id
+               ');
+                $stmt->execute([
+				':id' => $id,]);
+        }
+
+
+	// Delete a particular package version
+     public static function deleteVersion($id, $version) {
+        	$stmt = static::$conn->prepare('
+			DELETE FROM versions
+			WHERE PackageId = :id and  Version = :version
+		');
+		$stmt->execute([
+				':id' => $id,
+				':version' => $version,]);
+        }
+
+
+	// Check if a package has any versions on record
+	public static function hasVersions($id) {
+		$stmt = static::$conn->prepare('
+			SELECT COUNT(1)
+			FROM versions
+			WHERE PackageId = :id
+		');
+		$stmt->execute([
+			':id' => $id,
+		]);
+		return $stmt->fetchColumn() > 0;
+		
+	}
+
+	// Get the top version for a package
+	public static function getTopVersion($id) {
+
+		// Get all versions for a package in descending order
+		$stmt = static::$conn->prepare('
+			SELECT
+			        versions.Version,
+				versions.Title
+			FROM versions
+			WHERE versions.PackageId = :id
+			ORDER by versions.Version desc
+			');
+	     	
+		$stmt->execute([
+			':id' => $id,
+		]);
+		return $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+
+
+
+
+
+
+
 	public static function insertVersion($params) {
 		$params[':Created'] = time();
 		$params[':Dependencies'] = json_encode($params[':Dependencies']);

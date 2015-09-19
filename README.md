@@ -1,5 +1,5 @@
 Simple NuGet Server
-===================
+=================== 
 
 A very simple NuGet server for my personal use, similar to
 [NuGet.Server](https://www.nuget.org/packages/NuGet.Server) but in PHP. Designed
@@ -12,8 +12,9 @@ Features
  - Pushing via NuGet command line (NuGet.exe)
  - Simple set up
  - Stores data in SQLite or MySQL database
- - Uses a single API key (so not suitable for scenarios where multiple users
-   need to be able to push packages)
+ - Uses a single API key (so not suitable for scenarios where multiple users need to be able to push packages)
+ - Delete a package version (this feature comes handy while testing package deployment)
+
 
 Setup
 =====
@@ -28,18 +29,27 @@ git clone https://github.com/Daniel15/simple-nuget-server.git
 chown www-data:www-data db packagefiles
 chmod 0770 db packagefiles
 ```
+3 - This solution requires PHP to have support for sqlite. Proceed to install as follows if needed
+```bash
+# check if pp5-sqlite is installed
+dpkg --get-selections | grep php5-sqlite
+# install package if not found
+apt-get install php5-sqlite
+```
 
-2 - Copy nginx.conf.example to /etc/nginx/sites-available and modify it for your environment:
- - Change `example.com` to your domain name
- - Change `/var/www/simple-nuget-server/` to the checkout directory
- - Change "hhvm" to the name of a PHP upstream in your Nginx config. This can be regular PHP 5.4+ or HHVM.
+2 - Copy nginx.conf.example to /etc/nginx/sites-available/nuget and modify it for your environment:
+ - Change `example.com` to your domain name.  In my environment I am using `homenuget.com`. Remember to add this entry to the client host file if needed
+ - Root must point to `/var/www/simple-nuget-server/public/`. Do not change this entry
+ - Change "hhvm" to the name of a PHP upstream in your Nginx config. This can be regular PHP 5.4+ or HHVM.  This entry needs to be changed for the \.php$ and /index.php locations
  - If hosting as part of another site, prefix everything with a subdirectory and combine the config with your existing site's config (see ReactJS.NET config at the end of this comment)
 
 3 - Edit `inc/config.php` and change `ChangeThisKey` to a randomly-generated string
 
 4 - Enable the site (if creating a new site)
 ```bash
+# create link to folder to enable site
 ln -s /etc/nginx/sites-available/nuget /etc/nginx/sites-enabled/nuget
+# reload nginx
 /etc/init.d/nginx reload
 ```
 
@@ -53,6 +63,17 @@ nuget.exe push Foo.nupkg -Source http://example.com/
 Examples
 ========
 [ReactJS.NET](http://reactjs.net/) repository at at http://reactjs.net/packages/. You can see its Nginx configuration at https://github.com/reactjs/React.NET/blob/master/site/nginx.conf
+
+Links
+========
+[Nuget Command Line (windows)](https://docs.nuget.org/consume/command-line-reference) 
+
+Versions
+========
+- 1.0.1
+Includes ability to delete versions of a package and update the package to the next available version. Package record and root directory is deleted when no more version are available
+- 1.0.0
+Push, Search, List and download capabilities
 
 Licence
 =======
