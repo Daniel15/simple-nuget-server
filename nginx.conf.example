@@ -18,13 +18,13 @@ server {
 
 	location ~ \.php$ {
 		include fastcgi_params;
-		fastcgi_pass hhvm;
+		fastcgi_pass php;
 	}
 
 	location = /index.php {
 		dav_methods PUT;
 		include fastcgi_params;
-		fastcgi_pass hhvm;
+		fastcgi_pass php;
 
 		# PHP doesn't parse request body for PUT requests, so fake a POST.
 		fastcgi_param REQUEST_METHOD POST;
