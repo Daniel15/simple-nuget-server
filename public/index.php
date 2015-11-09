@@ -1,11 +1,8 @@
 <?php
+require(__DIR__ . '/../inc/core.php');
+
 // PUT requests need to be redirected to push.php
-$is_put = $_SERVER['REQUEST_METHOD'] === 'PUT' ||
-	(
-		!empty($_SERVER['HTTP_X_METHOD_OVERRIDE']) &&
-		$_SERVER['HTTP_X_METHOD_OVERRIDE'] === 'PUT'
-	);
-if ($is_put) {
+if (request_method() === 'PUT') {
 	require(__DIR__ . '/push.php');
 	die();
 }

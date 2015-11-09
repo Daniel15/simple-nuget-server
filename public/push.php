@@ -1,9 +1,7 @@
 <?php
-require(__DIR__ . '/../inc/core.php');
+require_once(__DIR__ . '/../inc/core.php');
 
-if (empty($_SERVER['HTTP_X_NUGET_APIKEY']) || $_SERVER['HTTP_X_NUGET_APIKEY'] != Config::$apiKey) {
-	api_error('403', 'Invalid API key');
-}
+require_auth();
 
 if (empty($_FILES['package'])) {
 	api_error('400', 'No package file');

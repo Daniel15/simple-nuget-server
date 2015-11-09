@@ -275,6 +275,56 @@ class DB {
 	}
 
 	/**
+	 * Deletes a particular package version. If there are no remaining versions
+	 * for this package, also deletes the package itself.
+	 */
+	public static function deleteVersion($id, $version) {
+		$stmt = static::$conn->prepare('
+			DELETE FROM versions
+			WHERE PackageId = :id AND Version = :version
+		');
+		$stmt->execute([
+			'id' => $id,
+			'version' => $version,
+		]);
+
+		// Check if any other version exist for this package
+		$stmt = static::$conn->prepare('
+			SELECT Version
+			FROM versions
+			WHERE PackageId = :id
+			ORDER BY Created DESC
+			LIMIT 1
+		');
+		$stmt->execute([
+			'id' => $id,
+		]);
+		$latestVersion = $stmt->fetchColumn();
+
+		if (empty($latestVersion)) {
+			// No other versions remaining, also delete the package
+			$stmt = static::$conn->prepare('
+				DELETE FROM packages
+				WHERE PackageId = :id
+			');
+			$stmt->execute([
+				'id' => $id,
+			]);
+		} else {
+			// There's still at least one version remaining, update the LatestVersion.
+			$stmt = static::$conn->prepare('
+				UPDATE packages
+				SET LatestVersion = :latestVersion
+				WHERE PackageId = :id
+			');
+			$stmt->execute([
+				'id' => $id,
+				'latestVersion' => $latestVersion,
+			]);
+		}
+	}
+
+	/**
 	 * Builds a parameterised IN(...) WHERE clause.
 	 *
 	 * @param $field Name of the field
