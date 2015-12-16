@@ -17,6 +17,7 @@ server {
 	rewrite ^/([^/]+)/([^/]+)$ /delete.php?id=$1&version=$2;
 
 	# NuGet.exe adds /api/v2/ to URL when the server is at the root
+	rewrite ^/api/v2/package$ /index.php;
 	rewrite ^/api/v2/package/$ /index.php;
 	rewrite ^/api/v2/package/([^/]+)/([^/]+)$ /delete.php?id=$1&version=$2;
 
