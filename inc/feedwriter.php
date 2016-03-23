@@ -107,7 +107,7 @@ class FeedWriter {
 			'PackageSize' => ['value' => $row['PackageSize'], 'type' => 'Edm.Int64'],
 			'ProjectUrl' => $row['ProjectUrl'],
 			'ReportAbuseUrl' => '',
-			'ReleaseNotes' => $row['ReleaseNotes'],
+			'ReleaseNotes' => htmlspecialchars($row['ReleaseNotes']),
 			'RequireLicenseAcceptance' => static::renderMetaBoolean($row['RequireLicenseAcceptance']),
 			'Summary' => null,
 			'Tags' => $row['Tags'],
