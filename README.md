@@ -26,6 +26,8 @@ For a Debian-based distro (including Ubuntu), installation is something along th
  - PHP 5.4+ or HHVM
  - SQLite extension (bundled with HHVM, or `apt-get install php5-sqlite` for PHP)
 
+Note: If using Nginx, please make sure `ngx_http_dav_module` is installed. This is required to enable HTTP `PUT` support.
+
 2 - Copy app to your server, you could do a Git clone on the server or add it as a Git submodule if adding to a site that's already managed via Git:
 ```bash
 cd /var/www
