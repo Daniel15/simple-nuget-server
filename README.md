@@ -24,7 +24,7 @@ For a Debian-based distro (including Ubuntu), installation is something along th
 
  - A web server (Nginx, Apache, Cherokee, etc.)
  - PHP 5.4+ or HHVM
- - SQLite, XML, and Zip extensions (bundled with HHVM, or `apt-get install php5-sqlite php5-xml php5-zip` for PHP)
+ - SQLite, XML, and Zip extensions (bundled with HHVM, or `apt-get install php5-sqlite` for PHP 5, or `apt-get install php7.0-sqlite php7.0-xml php7.0-zip` for PHP 7)
 
 Note: If using Nginx, please make sure `ngx_http_dav_module` is installed. This is required to enable HTTP `PUT` support.
 
