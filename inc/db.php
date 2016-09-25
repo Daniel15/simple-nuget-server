@@ -1,6 +1,7 @@
 <?php
 class DB {
 	private static $conn;
+	private static $isMysql;
 
 	public static function init() {
 		static::$conn = new PDO(
@@ -9,27 +10,33 @@ class DB {
 			Config::$dbPassword
 		);
 		static::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		static::$isMysql = static::$conn->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql';
 		static::createTables();
 	}
 
 	private static function createTables() {
 		static::$conn->exec('
 			CREATE TABLE IF NOT EXISTS packages (
-				PackageId TEXT PRIMARY KEY,
-				Title TEXT,
+				PackageId ' . (static::$isMysql ? 'VARCHAR (256)' : 'TEXT PRIMARY KEY') . ',
+				Title ' . (static::$isMysql ? 'VARCHAR (256)' : 'TEXT') . ',
 				DownloadCount INTEGER NOT NULL DEFAULT 0,
-				LatestVersion TEXT
+				LatestVersion TEXT' . (static::$isMysql ? ',
+				PRIMARY KEY (PackageId),
+				INDEX packages_DownloadCount (DownloadCount),
+				INDEX packages_Title(Title)
+				' : '') . '
 			);
+			' . (static::$isMysql ? '' : '
 			CREATE INDEX IF NOT EXISTS packages_DownloadCount ON packages (DownloadCount);
 			CREATE INDEX IF NOT EXISTS packages_Title ON packages (Title);
-
+			') . '
 			CREATE TABLE IF NOT EXISTS versions (
-				VersionId INTEGER PRIMARY KEY,
+				VersionId INTEGER ' . (static::$isMysql ? 'AUTO_INCREMENT' : 'PRIMARY KEY') . ',
 				PackageId TEXT,
 				Title TEXT,
 				Description TEXT,
 				Created INTEGER,
-				Version TEXT,
+				Version ' . (static::$isMysql ? 'VARCHAR (32)' : 'TEXT') . ',
 				PackageHash TEXT,
 				PackageHashAlgorithm TEXT,
 				Dependencies TEXT,
@@ -44,9 +51,14 @@ class DB {
 				Owners TEXT,
 				RequireLicenseAcceptance BOOLEAN,
 				Copyright TEXT,
-				IsPrerelease BOOLEAN
+				IsPrerelease BOOLEAN' . (static::$isMysql ? ',
+				PRIMARY KEY (VersionId),
+				INDEX versions_Version (Version)
+				' : '') . '
 			);
+			' . (static::$isMysql ? '' : '
 			CREATE INDEX IF NOT EXISTS versions_Version ON versions (Version);
+			') . '
 		');
 	}
 
@@ -235,7 +247,7 @@ class DB {
 		// Upserts aren't standardised across DBMSes :(
 		// Easiest thing here is to just do an insert followed by an update.
 		$stmt = static::$conn->prepare('
-			INSERT OR IGNORE INTO packages
+			INSERT ' . (static::$isMysql ? '' : 'OR') . ' IGNORE INTO packages
 				(PackageId, Title, LatestVersion)
 			VALUES
 				(:id, :title, :version)
