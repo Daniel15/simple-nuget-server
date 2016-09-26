@@ -17,11 +17,10 @@ class DB {
 	private static function createTables() {
 		static::$conn->exec('
 			CREATE TABLE IF NOT EXISTS packages (
-				PackageId ' . (static::$isMysql ? 'VARCHAR (256)' : 'TEXT PRIMARY KEY') . ',
-				Title ' . (static::$isMysql ? 'VARCHAR (256)' : 'TEXT') . ',
+				PackageId VARCHAR (256) PRIMARY KEY,
+				Title VARCHAR (256),
 				DownloadCount INTEGER NOT NULL DEFAULT 0,
 				LatestVersion TEXT' . (static::$isMysql ? ',
-				PRIMARY KEY (PackageId),
 				INDEX packages_DownloadCount (DownloadCount),
 				INDEX packages_Title(Title)
 				' : '') . '
@@ -31,12 +30,12 @@ class DB {
 			CREATE INDEX IF NOT EXISTS packages_Title ON packages (Title);
 			') . '
 			CREATE TABLE IF NOT EXISTS versions (
-				VersionId INTEGER ' . (static::$isMysql ? 'AUTO_INCREMENT' : 'PRIMARY KEY') . ',
+				VersionId INTEGER AUTO_INCREMENT PRIMARY KEY,
 				PackageId TEXT,
 				Title TEXT,
 				Description TEXT,
 				Created INTEGER,
-				Version ' . (static::$isMysql ? 'VARCHAR (32)' : 'TEXT') . ',
+				Version VARCHAR (32),
 				PackageHash TEXT,
 				PackageHashAlgorithm TEXT,
 				Dependencies TEXT,
@@ -52,7 +51,6 @@ class DB {
 				RequireLicenseAcceptance BOOLEAN,
 				Copyright TEXT,
 				IsPrerelease BOOLEAN' . (static::$isMysql ? ',
-				PRIMARY KEY (VersionId),
 				INDEX versions_Version (Version)
 				' : '') . '
 			);
