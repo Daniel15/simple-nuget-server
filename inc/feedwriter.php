@@ -6,8 +6,8 @@ class FeedWriter {
 	public function __construct($id) {
 		$this->feedID = $id;
 		$this->baseURL =
-			'http://' .
-			$_SERVER['HTTP_HOST'] .
+			url_scheme() .
+			$_SERVER['SERVER_NAME'] .
 			dirname($_SERVER['REQUEST_URI']) . '/';
 	}
 
