@@ -60,7 +60,7 @@ nuget.exe push Foo.nupkg -Source http://example.com/
 
 Examples
 ========
-[ReactJS.NET](http://reactjs.net/) repository at at http://reactjs.net/packages/. You can see its Nginx configuration at https://github.com/reactjs/React.NET/blob/master/site/nginx.conf
+[ReactJS.NET](http://reactjs.net/) repository at http://reactjs.net/packages/. You can see its Nginx configuration at https://github.com/reactjs/React.NET/blob/master/site/nginx.conf
 
 Licence
 =======
