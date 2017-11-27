@@ -55,3 +55,12 @@ function get_package_path($id, $version) {
 	// This is safe - These values have been validated via validateIdAndVersion above
 	return '/packagefiles/' . $id . '/' . $version . '.nupkg';
 }
+
+/* Used to construct URIs */
+function url_scheme() {
+	if ( (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) {
+		return 'https://';
+	} else {
+		return 'http://';
+	}
+}
