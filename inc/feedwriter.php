@@ -8,7 +8,7 @@ class FeedWriter {
 		$this->baseURL =
 			url_scheme() .
 			$_SERVER['SERVER_NAME'] .
-			dirname($_SERVER['REQUEST_URI']);
+			rtrim(dirname($_SERVER['REQUEST_URI']), '/') . '/';
 	}
 
 	public function write(array $results) {
