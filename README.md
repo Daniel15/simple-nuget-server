@@ -37,30 +37,33 @@ chown www-data:www-data db packagefiles
 chmod 0770 db packagefiles
 ```
 
-3 - Copy nginx.conf.example to `/etc/nginx/sites-available/nuget` and modify it for your environment:
+3 - Ensure you have a PHP 5.4+ or HHVM upstream configured. For example, in `/etc/nginx/conf.d/php.conf`:
+```
+upstream php {
+    server unix:/var/run/php7.2-fpm.sock;
+}
+```
+
+4 - Copy nginx.conf.example to `/etc/nginx/sites-available/nuget` and modify it for your environment:
  - Change `example.com` to your domain name
  - Change `/var/www/simple-nuget-server/` to the checkout directory
- - Change "php" to the name of a PHP upstream in your Nginx config. This can be regular PHP 5.4+ or HHVM.
+ - Change "php" to the name of a PHP upstream in your Nginx config, configured in step 3. This can be regular PHP 5.4+ or HHVM.
  - If hosting as part of another site, prefix everything with a subdirectory and combine the config with your existing site's config (see ReactJS.NET config at the end of this comment)
 
-4 - Edit `inc/config.php` and change `ChangeThisKey` to a [randomly-generated string](https://www.random.org/strings/)
+5 - Edit `inc/config.php` and change `ChangeThisKey` to a [randomly-generated string](https://www.random.org/strings/)
 
-5 - Enable the site (if creating a new site)
+6 - Enable the site (if creating a new site)
 ```bash
 ln -s /etc/nginx/sites-available/nuget /etc/nginx/sites-enabled/nuget
 /etc/init.d/nginx reload
 ```
 
-6 - Set the API key and test it out. I test using [nuget.exe](https://docs.nuget.org/consume/command-line-reference) (which is required for pushing)
+7 - Set the API key and test it out. I test using [nuget.exe](https://docs.nuget.org/consume/command-line-reference) (which is required for pushing)
 ```
 nuget.exe setApiKey -Source http://example.com/ ChangeThisKey
 nuget.exe push Foo.nupkg -Source http://example.com/
 ```
 (if using Mono, run `mono nuget.exe` instead)
-
-Examples
-========
-[ReactJS.NET](http://reactjs.net/) repository at http://reactjs.net/packages/. You can see its Nginx configuration at https://github.com/reactjs/React.NET/blob/master/site/nginx.conf
 
 Licence
 =======
