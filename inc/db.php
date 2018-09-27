@@ -72,7 +72,7 @@ class DB {
 
 		// Defaults
 		if (empty($params['orderBy'])) {
-			$params['orderBy'] = 'DownloadCount desc, Id';
+			$params['orderBy'] = Config::$defaultSortOrder;
 		}
 
 		if (!$params['includePrerelease']) {
