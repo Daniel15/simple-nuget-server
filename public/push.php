@@ -59,11 +59,20 @@ if ($nuspec->metadata->dependencies) {
 	if ($nuspec->metadata->dependencies->group) {
 		// Dependencies that are specific to a particular framework
 		foreach ($nuspec->metadata->dependencies->group as $group) {
-			foreach ($group->dependency as $dependency) {
+			if ($group->dependency) {
+				foreach ($group->dependency as $dependency) {
+					$dependencies[] = [
+						'framework' => (string)$group['targetFramework'],
+						'id' => (string)$dependency['id'],
+						'version' => (string)$dependency['version']
+					];
+				}
+			} else {
+				// Group doesn't have any dependencies but we still need to save the framework
 				$dependencies[] = [
 					'framework' => (string)$group['targetFramework'],
-					'id' => (string)$dependency['id'],
-					'version' => (string)$dependency['version']
+					'id' => '',
+					'version' => ''
 				];
 			}
 		}
