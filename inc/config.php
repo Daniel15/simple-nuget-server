@@ -7,8 +7,10 @@ class Config {
 	public static $dbPassword;
 	public static $apiKey;
 	public static $packageDir;
+	public static $defaultSortOrder;
 }
 
 Config::$dbName = 'sqlite:../db/packages.sqlite3';
 Config::$packageDir = __DIR__ . '/../packagefiles/';
 Config::$apiKey = 'ChangeThisKey';
+Config::$defaultSortOrder = 'DownloadCount desc, Id';

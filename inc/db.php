@@ -72,7 +72,7 @@ class DB {
 
 		// Defaults
 		if (empty($params['orderBy'])) {
-			$params['orderBy'] = 'DownloadCount desc, Id';
+			$params['orderBy'] = Config::$defaultSortOrder;
 		}
 
 		if (!$params['includePrerelease']) {
@@ -155,7 +155,7 @@ class DB {
 	private static function parseOrderBy($order_by) {
 		$valid_sort_columns = [
 			'downloadcount' => 'packages.DownloadCount',
-			'id' => 'packages.PackageId',
+			'id' => 'LOWER(packages.PackageId)',
 			'published' => 'versions.Created',
 		];
 		$columns = explode(',', $order_by);
