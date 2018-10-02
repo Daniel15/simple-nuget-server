@@ -69,6 +69,7 @@ class DB {
 	public static function searchPackages($params) {
 		$query_params = [];
 		$where = '1=1';
+		$pagination = '';
 
 		// Defaults
 		if (empty($params['orderBy'])) {
@@ -83,6 +84,19 @@ class DB {
 				(packages.Title LIKE :searchQuery
 				OR packages.PackageId LIKE :searchQuery)';
 			$query_params['searchQuery'] = '%' . $params['searchQuery'] . '%';
+		}
+		if (!empty($params['top'])) {
+			// Have some attempt at checking valid values
+			$int = intval($params['top']);
+			if ($int > 0) {
+				$pagination .= ' LIMIT ' . $int;
+			}
+		}
+		if (!empty($params['offset'])) {
+			$int = intval($params['offset']);
+			if ($int > 0) {
+				$pagination .= ' OFFSET ' . $int;
+			}
 		}
 
 		switch ($params['filter']) {
@@ -100,7 +114,7 @@ class DB {
 
 		$order = static::parseOrderBy($params['orderBy']);
 
-		return static::doSearch($where, $order, $query_params);
+		return static::doSearch($where, $order, $query_params, $pagination);
 	}
 
 	public static function packageUpdates($params) {
@@ -134,7 +148,8 @@ class DB {
 		return static::doSearch(
 			$where,
 			'packages.PackageId ASC',
-			$query_params
+			$query_params,
+			''
 		);
 	}
 
@@ -149,7 +164,7 @@ class DB {
 			$where .= ' AND versions.Version = :version';
 			$params['version'] = $version;
 		}
-		return static::doSearch($where, 'versions.Version DESC', $params);
+		return static::doSearch($where, 'versions.Version DESC', $params, '');
 	}
 
 	private static function parseOrderBy($order_by) {
@@ -182,7 +197,7 @@ class DB {
 
 	// *Assumes* $where and $order are sanitised!! This should be done at the
 	// callsites!
-	private static function doSearch($where, $order, $params) {
+	private static function doSearch($where, $order, $params, $pagination) {
 		// TODO: Move this to a view
 		$stmt = static::$conn->prepare('
 			SELECT
@@ -200,6 +215,7 @@ class DB {
 			INNER JOIN versions ON packages.PackageId = versions.PackageId
 			WHERE ' . $where . '
 			ORDER BY ' . $order . '
+			' . $pagination . '
 		');
 		$stmt->execute($params);
 		return $stmt->fetchAll();
