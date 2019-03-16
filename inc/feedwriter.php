@@ -7,7 +7,7 @@ class FeedWriter {
 		$this->feedID = $id;
 		$this->baseURL =
 			url_scheme() .
-			$_SERVER['SERVER_NAME'] .
+			$_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] .
 			rtrim(dirname($_SERVER['REQUEST_URI']), '/') . '/';
 	}
 
