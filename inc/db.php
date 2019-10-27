@@ -158,7 +158,7 @@ class DB {
 	 * all versions.
 	 */
 	public static function findByID($id, $version = null) {
-		$where = 'packages.PackageId = :id';
+		$where = 'packages.PackageId = :id COLLATE NOCASE';
 		$params = ['id' => $id];
 		if (!empty($version)) {
 			$where .= ' AND versions.Version = :version';
