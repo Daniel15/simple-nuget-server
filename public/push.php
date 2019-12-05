@@ -3,11 +3,17 @@ require_once(__DIR__ . '/../inc/core.php');
 
 require_auth();
 
-if (empty($_FILES['package'])) {
+if (count($_FILES)==0)
+{
 	api_error('400', 'No package file');
 }
 
-$upload_filename = $_FILES['package']['tmp_name'];
+$upload_filename = "";
+foreach ($_FILES as $value)
+{
+        $upload_filename=$value['tmp_name'];
+        break;
+}
 // Try to find NuSpec file
 $package_zip = new ZipArchive();
 $package_zip->open($upload_filename);
@@ -40,7 +46,7 @@ if (DB::validateIdAndVersion($id, $version)) {
 }
 
 $hash = base64_encode(hash_file('sha512', $upload_filename, true));
-$filesize = filesize($_FILES['package']['tmp_name']);
+$filesize = filesize($upload_filename);
 $dependencies = [];
 
 
