@@ -14,6 +14,7 @@ Features
  - Stores data in SQLite or MySQL database
  - Uses a single API key (so not suitable for scenarios where multiple users
    need to be able to push packages)
+ - Compatible with [Chocolatey](https://chocolatey.org/): one can get, search for, and publish packages (at least, surely it's not feature-complete)
 
 Setup
 =====
