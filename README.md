@@ -65,6 +65,11 @@ nuget.exe push Foo.nupkg -Source http://example.com/
 ```
 (if using Mono, run `mono nuget.exe` instead)
 
+Development
+===========
+
+SearchFilterParser has been generated using [this repository](https://github.com/KoltesDigital/simple-nuget-server-search-filter-parser).
+
 Licence
 =======
 (The MIT licence)
