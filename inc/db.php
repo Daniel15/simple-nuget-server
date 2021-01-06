@@ -1,7 +1,10 @@
 <?php
+require('searchFilterParser.php');
+
 class DB {
 	private static $conn;
 	private static $isMysql;
+	private static $searchFilterParser;
 
 	public static function init() {
 		static::$conn = new PDO(
@@ -12,6 +15,7 @@ class DB {
 		static::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		static::$isMysql = static::$conn->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql';
 		static::createTables();
+		static::$searchFilterParser = new PhpPegJs\SearchFilterParser;
 	}
 
 	private static function createTables() {
@@ -99,17 +103,15 @@ class DB {
 			}
 		}
 
-		switch ($params['filter']) {
-			case '':
-				break;
-
-			case 'IsAbsoluteLatestVersion':
-			case 'IsLatestVersion':
-				$where .= ' AND versions.Version = packages.LatestVersion';
-				break;
-
-			default:
-				throw new Exception('Unknown filter "' . $params['filter'] . '"');
+		if (!empty($params['filter'])) {
+			try {
+				$result = static::$searchFilterParser->parse($params['filter']);
+				if (!is_null($result)) {
+					$where .= ' AND ' . $result;
+				}
+			} catch (PhpPegJs\SyntaxError $ex) {
+				throw new Exception('Syntax error: ' . $ex->getMessage() . ' at index ' . $ex->grammarOffset);
+			}
 		}
 
 		$order = static::parseOrderBy($params['orderBy']);

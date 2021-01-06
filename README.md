@@ -14,6 +14,7 @@ Features
  - Stores data in SQLite or MySQL database
  - Uses a single API key (so not suitable for scenarios where multiple users
    need to be able to push packages)
+ - Compatible with [Chocolatey](https://chocolatey.org/): one can get, search for, and publish packages (at least, surely it's not feature-complete)
 
 Setup
 =====
@@ -64,6 +65,11 @@ nuget.exe setApiKey -Source http://example.com/ ChangeThisKey
 nuget.exe push Foo.nupkg -Source http://example.com/
 ```
 (if using Mono, run `mono nuget.exe` instead)
+
+Development
+===========
+
+SearchFilterParser has been generated using [this repository](https://github.com/KoltesDigital/simple-nuget-server-search-filter-parser).
 
 Licence
 =======
