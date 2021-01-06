@@ -5,10 +5,7 @@ class FeedWriter {
 
 	public function __construct($id) {
 		$this->feedID = $id;
-		$this->baseURL =
-			url_scheme() .
-			$_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] .
-			rtrim(dirname($_SERVER['REQUEST_URI']), '/') . '/';
+		$this->baseURL = get_base_url() . '/';
 	}
 
 	public function write(array $results) {

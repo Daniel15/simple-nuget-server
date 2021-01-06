@@ -56,11 +56,33 @@ function get_package_path($id, $version) {
 	return '/packagefiles/' . $id . '/' . $version . '.nupkg';
 }
 
-/* Used to construct URIs */
-function url_scheme() {
-	if ( (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
-		return 'https://';
-	} else {
-		return 'http://';
+/**
+ * Gets the Base URL, directly if set by SetEnv / fastcgi_params, or computes it.
+ */
+function get_base_url() {
+	if (isset($_SERVER['BASE_URL'])) {
+		return $_SERVER['BASE_URL'];
 	}
+
+	$scheme = isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+		? $_SERVER['HTTP_X_FORWARDED_PROTO']
+		: (
+			( (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == '443') || $_SERVER['SERVER_PORT'] == '443')
+				? 'https'
+				: 'http'
+			);
+	$host = isset($_SERVER['HTTP_X_FORWARDED_HOST'])
+		? $_SERVER['HTTP_X_FORWARDED_HOST']
+		: $_SERVER['SERVER_NAME'];
+	$port = isset($_SERVER['HTTP_X_FORWARDED_PORT'])
+		? $_SERVER['HTTP_X_FORWARDED_PORT']
+		: $_SERVER['SERVER_PORT'];
+	$path = rtrim(dirname($_SERVER['REQUEST_URI']), '/');
+
+	$baseURL = $scheme . '://' . $host;
+	if (($scheme != 'http' || $port != '80') && ($scheme != 'https' || $port != '443')) {
+		$baseURL .= ':' . $port;
+	}
+	$baseURL .= $path;
+	return $baseURL;
 }
